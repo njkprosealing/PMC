@@ -114,9 +114,9 @@
             </div>
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-slate-500 font-medium">正常備料 (Normal)</p>
+                    <p class="text-sm text-slate-500 font-medium">正常備料與洗鐵提醒 (Normal)</p>
                     <h3 id="normalCount" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
-                    <p class="text-xs text-slate-400 mt-1">進度正常</p>
+                    <p class="text-xs text-slate-400 mt-1">已檢驗完成待洗鐵</p>
                 </div>
                 <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 text-xl font-bold">🟢</div>
             </div>
@@ -126,8 +126,8 @@
         <div id="resultSection" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hidden">
             <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-slate-800">外購料件交期變更通知單（含洗鐵視窗與橡膠自訂規則）</h3>
-                    <p class="text-xs text-slate-500">生管確認變更清單與洗鐵提醒後簽名</p>
+                    <h3 class="font-bold text-slate-800">外購料件交期變更通知單（含已檢驗待洗鐵與洗鐵視窗提醒）</h3>
+                    <p class="text-xs text-slate-500">生管確認變更清單與洗鐵排程提醒後簽名</p>
                 </div>
                 <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2">
                     <span>📥 下載變更通知單 Excel</span>
@@ -191,15 +191,17 @@
             const scheduleData = [
                 { "製令編號": "MO-2026-010", "產品": "FKM-75氟橡膠", "預計開工日": "2026-03-10" },
                 { "製令編號": "MO-2026-010", "產品": "SUS304內骨架鐵件", "預計開工日": "2026-03-10" },
-                { "製令編號": "MO-2026-020", "產品": "NBR-70一般膠", "預計開工日": "2026-04-15" }
+                { "製令編號": "MO-2026-020", "產品": "NBR-70一般膠", "預計開工日": "2026-04-15" },
+                { "製令編號": "MO-2026-030", "產品": "SPCC外殼鐵件", "預計開工日": "2026-03-20" } // 已提早到貨檢驗完成、等待洗鐵
             ];
             const procureData = [
-                { "採購單號": "PO-8001", "品 號": "FKM-75氟橡膠", "預交日": "2026-03-18" },
-                { "採購單號": "PO-8002", "品 號": "SUS304內骨架鐵件", "預交日": "2026-03-09" },
-                { "採購單號": "PO-8003", "品 號": "NBR-70一般膠", "預交日": "2026-03-01" }
+                { "採購單號": "PO-8001", "品 號": "FKM-75氟橡膠", "預交日": "2026-03-18" }, // 需提前 (Pull-in)
+                { "採購單號": "PO-8002", "品 號": "SUS304內骨架鐵件", "預交日": "2026-03-09" }, // 來不及IQC
+                { "採購單號": "PO-8003", "品 號": "NBR-70一般膠", "預交日": "2026-03-01" },  // 需緩送 (Push-out)
+                { "採購單號": "PO-8004", "品 號": "SPCC外殼鐵件", "預交日": "2026-03-05" }  // 提早到貨，已IQC完成，提示洗鐵視窗
             ];
             processData(scheduleData, procureData);
-            document.getElementById('statusText').innerText = "已載入內建範例（含洗鐵排程提醒與橡膠自訂規則）";
+            document.getElementById('statusText').innerText = "已載入內建範例（包含已檢驗完成待洗鐵的鐵件資料）";
         }
 
         function runComparison() {
@@ -274,9 +276,6 @@
                         const category = classifyCategory(mat);
 
                         if (category === '鐵件類') {
-                            // 鐵件邏輯：
-                            // 1. 必須夠早到以完成 IQC (ETA <= 開工日 - iqcDays)
-                            // 2. 洗鐵提醒：建議洗鐵日期範圍為 [開工日 - maxWashDays 到 開工日]
                             const latestEtaForIqc = new Date(startDate);
                             latestEtaForIqc.setDate(latestEtaForIqc.getDate() - iqcDays);
 
@@ -299,7 +298,7 @@
                                 });
                             } else {
                                 normal++;
-                                // 就算鐵件正常到貨，也可以提供洗鐵排程提醒
+                                // 已經檢驗完成、提早到廠的鐵件，顯示洗鐵排程提醒（綠燈/正常提醒，納入清單讓生管掌握洗鐵時機）
                                 globalResultData.push({
                                     工單號: orderNo,
                                     料件屬性: '鐵件類',
@@ -307,9 +306,9 @@
                                     PO號: po,
                                     原ETA: formatDate(etaDate),
                                     建議新到貨日: formatDate(etaDate),
-                                    動作: '【鐵件備料正常】',
-                                    差距天數: `已過IQC，可安心排程`,
-                                    洗鐵提示: `⭐ 建議洗鐵視窗：${formatDate(washStartDate)} ~ ${formatDate(startDate)} (避免過早洗生銹)`,
+                                    動作: '【已檢驗完成 ｜ 待洗鐵】',
+                                    差距天數: `已完成IQC進料檢驗`,
+                                    洗鐵提示: `⭐ 建議洗鐵視窗：${formatDate(washStartDate)} ~ ${formatDate(startDate)} (開工前${maxWashDays}天內清洗，防生銹)`,
                                     類型: 'green'
                                 });
                             }
@@ -353,10 +352,6 @@
                 });
             });
 
-            // 為了讓報表乾淨，我們把 normal 裡的鐵件洗鐵提醒也過濾或保留，這裡保留紅、紫與重要提醒
-            // 為了不讓表格過於雜亂，我們可以把 normal 的純綠燈只在後台或有需要時呈現，這裡篩選出紅字與紫字，以及需要特別注意的提醒
-            globalResultData = globalResultData.filter(item => item.類型 !== 'green');
-
             document.getElementById('pullInCount').innerText = pullIn;
             document.getElementById('pushOutCount').innerText = pushOut;
             document.getElementById('normalCount').innerText = normal;
@@ -389,12 +384,16 @@
             document.getElementById('resultSection').classList.remove('hidden');
 
             if (globalResultData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-6 text-center text-slate-400">目前沒有需要調整交期的項目（所有橡膠保質期與鐵件洗鐵視窗皆在安全範圍內）</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-6 text-center text-slate-400">目前沒有需要調整或提醒的項目</td></tr>`;
                 return;
             }
 
             globalResultData.forEach(row => {
-                const badgeClass = row.類型 === 'red' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-purple-100 text-purple-800 border border-purple-200';
+                let badgeClass = 'bg-slate-100 text-slate-800 border border-slate-200';
+                if (row.類型 === 'red') badgeClass = 'bg-red-100 text-red-800 border border-red-200';
+                else if (row.類型 === 'purple') badgeClass = 'bg-purple-100 text-purple-800 border border-purple-200';
+                else if (row.類型 === 'green') badgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+
                 const catBadge = row.料件屬性 === '鐵件類' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200';
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 transition';
@@ -435,8 +434,8 @@
             }));
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "交期變更通知單(洗鐵控管)");
-            XLSX.writeFile(wb, "外購料件交期變更通知單_洗鐵控管.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "交期變更與洗鐵清單");
+            XLSX.writeFile(wb, "外購料件交期變更與洗鐵通知單.xlsx");
         }
     </script>
 </body>
