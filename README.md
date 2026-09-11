@@ -1,0 +1,1 @@
+這個專案自動比對生產排程與採購 ETA，產生外購膠交期變更通知單。執行 `python compare_schedule.py` 即可。
