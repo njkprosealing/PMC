@@ -16,7 +16,7 @@
                     <p class="text-sm text-slate-500 mt-1">智慧控管：橡膠保質期緩衝與自訂料號規則；鐵件 IQC 檢驗與「洗鐵時機（開工前最早3天）」防鏽控管。</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium">洗鐵視窗 & 橡膠自訂規則</span>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium">版本：v2.6 (多樣化假設資料版)</span>
                 </div>
             </div>
         </header>
@@ -87,10 +87,10 @@
                         <span>⚡ 執行智慧比對</span>
                     </button>
                     <button onclick="loadSample()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-lg text-sm font-medium transition">
-                        載入內建範例測試
+                        載入多樣化內建範例測試
                     </button>
                 </div>
-                <span id="statusText" class="text-sm text-slate-500">尚未執行比對</span>
+                <span id="statusText" class="text-sm text-slate-500">請點擊「載入多樣化內建範例測試」</span>
             </div>
         </div>
 
@@ -126,7 +126,7 @@
         <div id="resultSection" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hidden">
             <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-slate-800">外購料件交期變更通知單（含已檢驗待洗鐵與洗鐵視窗提醒）</h3>
+                    <h3 class="font-bold text-slate-800">外購料件交期變更通知單（多樣化模擬情境）</h3>
                     <p class="text-xs text-slate-500">生管確認變更清單與洗鐵排程提醒後簽名</p>
                 </div>
                 <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2">
@@ -188,27 +188,30 @@
         }
 
         function loadSample() {
+            // 多樣化豐富的假設資料：涵蓋 FKM 催料、NBR 緩送、鐵件來不及檢驗、鐵件已到貨待洗鐵、EPDM 正常等
             const scheduleData = [
-                { "製令編號": "MO-2026-010", "產品": "FKM-75氟橡膠", "預計開工日": "2026-03-10" },
-                { "製令編號": "MO-2026-010", "產品": "SUS304內骨架鐵件", "預計開工日": "2026-03-10" },
-                { "製令編號": "MO-2026-020", "產品": "NBR-70一般膠", "預計開工日": "2026-04-15" },
-                { "製令編號": "MO-2026-030", "產品": "SPCC外殼鐵件", "預計開工日": "2026-03-20" } // 已提早到貨檢驗完成、等待洗鐵
+                { "製令編號": "MO-2026-101", "產品": "FKM-75氟橡膠", "預計開工日": "2026-03-10" },
+                { "製令編號": "MO-2026-101", "產品": "SUS304內骨架鐵件", "預計開工日": "2026-03-10" },
+                { "製令編號": "MO-2026-102", "產品": "NBR-70一般膠", "預計開工日": "2026-04-20" },
+                { "製令編號": "MO-2026-103", "產品": "SPCC外殼鐵件", "預計開工日": "2026-03-25" },
+                { "製令編號": "MO-2026-104", "產品": "EPDM耐熱膠", "預計開工日": "2026-03-15" }
             ];
             const procureData = [
-                { "採購單號": "PO-8001", "品 號": "FKM-75氟橡膠", "預交日": "2026-03-18" }, // 需提前 (Pull-in)
-                { "採購單號": "PO-8002", "品 號": "SUS304內骨架鐵件", "預交日": "2026-03-09" }, // 來不及IQC
-                { "採購單號": "PO-8003", "品 號": "NBR-70一般膠", "預交日": "2026-03-01" },  // 需緩送 (Push-out)
-                { "採購單號": "PO-8004", "品 號": "SPCC外殼鐵件", "預交日": "2026-03-05" }  // 提早到貨，已IQC完成，提示洗鐵視窗
+                { "採購單號": "PO-7001", "品 號": "FKM-75氟橡膠", "預交日": "2026-03-15" }, // 橡膠提前上線 -> 需急催 (Pull-in)
+                { "採購單號": "PO-7002", "品 號": "SUS304內骨架鐵件", "預交日": "2026-03-09" }, // 鐵件太晚到來不及IQC -> 需急催
+                { "採購單號": "PO-7003", "品 號": "NBR-70一般膠", "預交日": "2026-03-01" }, // 橡膠延後上線 -> 需緩送 (Push-out)
+                { "採購單號": "PO-7004", "品 號": "SPCC外殼鐵件", "預交日": "2026-03-08" }, // 鐵件提早到已IQC -> 待洗鐵提醒
+                { "採購單號": "PO-7005", "品 號": "EPDM耐熱膠", "預交日": "2026-03-12" }  // 正常備料
             ];
             processData(scheduleData, procureData);
-            document.getElementById('statusText').innerText = "已載入內建範例（包含已檢驗完成待洗鐵的鐵件資料）";
+            document.getElementById('statusText').innerText = "已載入 5 筆多樣化模擬情境範例資料！";
         }
 
         function runComparison() {
             const schedFile = document.getElementById('scheduleFile').files[0];
             const procFile = document.getElementById('procureFile').files[0];
             if (!schedFile || !procFile) {
-                alert('請上傳《生產排程表》與《採購在途進度表》Excel 檔案（或點選載入內建範例測試）');
+                alert('請上傳《生產排程表》與《採購在途進度表》Excel 檔案（或點選載入多樣化內建範例測試）');
                 return;
             }
 
@@ -252,7 +255,7 @@
             let pullIn = 0, pushOut = 0, normal = 0;
 
             const iqcDays = parseInt(document.getElementById('iqcDays').value) || 2;
-            const maxWashDays = parseInt(document.getElementById('maxWashDays').value) || 3; // 開工前最早3天洗鐵
+            const maxWashDays = parseInt(document.getElementById('maxWashDays').value) || 3;
 
             sched.forEach(s => {
                 const orderNo = s['製令編號'] || s['工單號'] || s[Object.keys(s)[0]] || '';
@@ -298,7 +301,6 @@
                                 });
                             } else {
                                 normal++;
-                                // 已經檢驗完成、提早到廠的鐵件，顯示洗鐵排程提醒（綠燈/正常提醒，納入清單讓生管掌握洗鐵時機）
                                 globalResultData.push({
                                     工單號: orderNo,
                                     料件屬性: '鐵件類',
@@ -313,7 +315,6 @@
                                 });
                             }
                         } else {
-                            // 橡膠邏輯
                             const specificBuffer = getRubberBuffer(mat);
 
                             if (diffDays < 0) {
