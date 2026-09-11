@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外購混煉膠交期變更通知與排程同步系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">外購混煉膠交期變更通知與排程同步系統</h1>
+            <p class="text-gray-600">解決排程改期未同步連動外購膠交期問題：自動比對開工日與 ETA，雙向連動催料與緩送。</p>
+        </header>
+
+        <!-- 雙向連動機制說明 -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
+                <h2 class="font-bold text-red-700 text-lg mb-1">🔴 需急催料 (Pull-in)</h2>
+                <p class="text-sm text-gray-700">排程提前：最新開工日 < 到廠日 (ETA)</p>
+                <p class="text-xs text-red-600 mt-2">防範：工單往前提前上線卻忘了催料導致停線。</p>
+            </div>
+            <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded shadow-sm">
+                <h2 class="font-bold text-purple-700 text-lg mb-1">🟣 需緩送料 (Push-out)</h2>
+                <p class="text-sm text-gray-700">排程延後：最新開工日 > 到廠日 (ETA) ＋ 安全存放天數 (7天)</p>
+                <p class="text-xs text-purple-600 mt-2">防範：工單往後延卻忘了緩送導致外購膠提早進廠放過期。</p>
+            </div>
+        </div>
+
+        <!-- 變更通知表展示 -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 bg-gray-100 border-b flex justify-between items-center">
+                <h3 class="font-bold text-gray-800">外購混煉膠交期變更通知單 (即時預覽)</h3>
+                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">安全天數：7 天</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">工單號</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">產品 / 料號</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">採購 PO 號</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">原 ETA</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">建議新到貨日</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">動作</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">差距天數</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-500">生管簽名</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">001</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-700">膠A</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-700">PO001</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-700">2024-09-15</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-700">2024-09-10</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-semibold rounded bg-purple-100 text-purple-800">延後 (Push-out)</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-700">5 天</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-400 border-b border-dashed border-gray-400">（簽名）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center text-xs text-gray-500">
+            <p>AI 自動比對與發出指令 ｜ 生管檢視變更清單並簽名確認</p>
+        </footer>
+    </div>
+</body>
+</html>
