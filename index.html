@@ -13,10 +13,10 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-800">外購料件（橡膠與鐵件）交期變更通知與排程同步系統</h1>
-                    <p class="text-sm text-slate-500 mt-1">雙軌分流管控：橡膠（防變質/保質期）與鐵件（防生銹/庫存堆積），精準連動排程異動。</p>
+                    <p class="text-sm text-slate-500 mt-1">智慧分流：橡膠控管過期（Push-out）；鐵件控管前置備料（IQC檢驗 ＋ 洗鐵工序前置天數）。</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium">橡膠 & 鐵件雙軌管控</span>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium">鐵件前置工序（洗鐵/檢驗）連動中</span>
                 </div>
             </div>
         </header>
@@ -33,38 +33,41 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">採購在途進度表 (ERP 匯出 Excel)</label>
                     <input type="file" id="procureFile" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
-                    <p class="text-xs text-slate-400 mt-1">含：採購單號、預交日、品號（可包含橡膠或鐵件）</p>
+                    <p class="text-xs text-slate-400 mt-1">含：採購單號、預交日、品號</p>
                 </div>
             </div>
 
-            <!-- 兩大料件類別安全天數設定 -->
+            <!-- 橡膠與鐵件不同管控邏輯設定 -->
             <div class="border-t border-slate-100 pt-4 mb-6">
-                <h3 class="text-sm font-semibold text-slate-700 mb-3">2. 橡膠與鐵件兩大料件類別安全天數設定 (Push-out 緩衝)</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
-                        <span class="text-xs font-bold text-amber-800 block mb-1">🔴 橡膠類（防過期變質）</span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-slate-600">FKM(高單價)限</span>
-                            <input type="number" id="fkmBuffer" value="3" class="w-16 border border-amber-300 rounded px-2 py-1 text-sm text-center bg-white font-bold">
-                            <span class="text-xs text-slate-600">天</span>
+                <h3 class="text-sm font-semibold text-slate-700 mb-3">2. 橡膠與鐵件差異化管控參數設定</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                        <span class="text-xs font-bold text-amber-800 block mb-2">🔴 橡膠類管控邏輯（防停線 ＆ 防過期）</span>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-slate-600 block">FKM 緩衝天數</label>
+                                <input type="number" id="fkmBuffer" value="3" class="w-full border border-amber-300 rounded px-2 py-1 text-sm text-center bg-white font-bold mt-1">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-600 block">一般橡膠緩衝</label>
+                                <input type="number" id="rubberBuffer" value="10" class="w-full border border-amber-300 rounded px-2 py-1 text-sm text-center bg-white font-bold mt-1">
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 mt-2">
-                            <span class="text-xs text-slate-600">一般橡膠限</span>
-                            <input type="number" id="rubberBuffer" value="10" class="w-16 border border-amber-300 rounded px-2 py-1 text-sm text-center bg-white font-bold">
-                            <span class="text-xs text-slate-600">天</span>
-                        </div>
+                        <p class="text-xs text-amber-700 mt-2">💡 橡膠太早到會過期變質（Push-out）；太晚到會停線（Pull-in）。</p>
                     </div>
-                    <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                        <span class="text-xs font-bold text-blue-800 block mb-1">🔵 鐵件類（防生銹/堆積）</span>
-                        <div class="flex items-center gap-2 mt-4">
-                            <span class="text-xs text-slate-600">金屬鐵件安全限</span>
-                            <input type="number" id="metalBuffer" value="14" class="w-16 border border-blue-300 rounded px-2 py-1 text-sm text-center bg-white font-bold">
-                            <span class="text-xs text-slate-600">天</span>
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <span class="text-xs font-bold text-blue-800 block mb-2">🔵 鐵件類管控邏輯（重在前置洗鐵 ＆ IQC 檢驗）</span>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-slate-600 block">IQC 檢驗天數</label>
+                                <input type="number" id="iqcDays" value="2" class="w-full border border-blue-300 rounded px-2 py-1 text-sm text-center bg-white font-bold mt-1">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-600 block">洗鐵前置天數</label>
+                                <input type="number" id="washDays" value="3" class="w-full border border-blue-300 rounded px-2 py-1 text-sm text-center bg-white font-bold mt-1">
+                            </div>
                         </div>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-center">
-                        <span class="text-xs font-bold text-slate-700 block mb-1">💡 雙軌管控原則</span>
-                        <p class="text-xs text-slate-500">橡膠與鐵件任一缺料即無法開工；提早進廠將分別導致橡膠變質或鐵件受潮生銹。</p>
+                        <p class="text-xs text-blue-700 mt-2">💡 鐵件**提早到完全沒問題**（有更多時間洗鐵與檢驗）；若太晚到導致來不及洗鐵與檢驗則須警示。</p>
                     </div>
                 </div>
             </div>
@@ -72,7 +75,7 @@
             <div class="flex flex-wrap justify-between items-center pt-4 border-t border-slate-100">
                 <div class="flex gap-4">
                     <button onclick="runComparison()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition flex items-center gap-2">
-                        <span>⚡ 執行橡膠與鐵件雙軌比對</span>
+                        <span>⚡ 執行智慧比對</span>
                     </button>
                     <button onclick="loadSample()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-lg text-sm font-medium transition">
                         載入內建範例（含橡膠與鐵件）
@@ -86,25 +89,25 @@
         <div id="statsSection" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden">
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-slate-500 font-medium">需急催料 (Pull-in)</p>
+                    <p class="text-sm text-slate-500 font-medium">需急催料 (Pull-in / 備料不足)</p>
                     <h3 id="pullInCount" class="text-3xl font-bold text-red-600 mt-1">0</h3>
-                    <p class="text-xs text-slate-400 mt-1">排程提前 ｜ 防停線</p>
+                    <p class="text-xs text-slate-400 mt-1">開工前來不及檢驗/洗鐵或缺膠</p>
                 </div>
                 <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 text-xl font-bold">🔴</div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-slate-500 font-medium">需緩送料 (Push-out)</p>
+                    <p class="text-sm text-slate-500 font-medium">橡膠需緩送料 (Push-out)</p>
                     <h3 id="pushOutCount" class="text-3xl font-bold text-purple-600 mt-1">0</h3>
-                    <p class="text-xs text-slate-400 mt-1">排程延後 ｜ 防過期/生銹</p>
+                    <p class="text-xs text-slate-400 mt-1">橡膠排程延後 ｜ 防過期變質</p>
                 </div>
                 <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 text-xl font-bold">🟣</div>
             </div>
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-slate-500 font-medium">正常交期 (Normal)</p>
+                    <p class="text-sm text-slate-500 font-medium">正常備料 (Normal)</p>
                     <h3 id="normalCount" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
-                    <p class="text-xs text-slate-400 mt-1">無需調整</p>
+                    <p class="text-xs text-slate-400 mt-1">進度正常</p>
                 </div>
                 <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 text-xl font-bold">🟢</div>
             </div>
@@ -114,8 +117,8 @@
         <div id="resultSection" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hidden">
             <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-slate-800">外購料件交期變更通知單（橡膠與鐵件雙軌）</h3>
-                    <p class="text-xs text-slate-500">依據料件屬性（橡膠/鐵件）套用專屬安全天數，生管確認後簽名交由採購</p>
+                    <h3 class="font-bold text-slate-800">外購料件交期變更通知單（橡膠與鐵件智慧分流）</h3>
+                    <p class="text-xs text-slate-500">鐵件重在前置洗鐵與IQC；橡膠重在保質期控管，生管確認後簽名</p>
                 </div>
                 <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2">
                     <span>📥 下載變更通知單 Excel</span>
@@ -132,7 +135,7 @@
                             <th class="px-6 py-3 text-left font-medium text-slate-500">原預交日 (ETA)</th>
                             <th class="px-6 py-3 text-left font-medium text-slate-500">建議新到貨日</th>
                             <th class="px-6 py-3 text-left font-medium text-slate-500">動作指令</th>
-                            <th class="px-6 py-3 text-left font-medium text-slate-500">差距天數 / 說明</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">評估說明</th>
                             <th class="px-6 py-3 text-left font-medium text-slate-500">生管簽名</th>
                         </tr>
                     </thead>
@@ -147,19 +150,18 @@
         let globalResultData = [];
 
         function loadSample() {
-            // 模擬包含橡膠與鐵件的排程與採購表
             const scheduleData = [
                 { "製令編號": "MO-2026-010", "產品": "FKM-75氟橡膠", "預計開工日": "2026-03-10" },
                 { "製令編號": "MO-2026-010", "產品": "SUS304內骨架鐵件", "預計開工日": "2026-03-10" },
                 { "製令編號": "MO-2026-020", "產品": "NBR-70一般膠", "預計開工日": "2026-04-15" }
             ];
             const procureData = [
-                { "採購單號": "PO-8001", "品 號": "FKM-75氟橡膠", "預交日": "2026-03-18" },
-                { "採購單號": "PO-8002", "品 號": "SUS304內骨架鐵件", "預交日": "2026-03-02" },
-                { "採購單號": "PO-8003", "品 號": "NBR-70一般膠", "預交日": "2026-03-25" }
+                { "採購單號": "PO-8001", "品 號": "FKM-75氟橡膠", "預交日": "2026-03-18" }, // 需提前 (Pull-in)
+                { "採購單號": "PO-8002", "品 號": "SUS304內骨架鐵件", "預交日": "2026-03-09" }, // 開工3/10, IQC+洗鐵需5天, 3/9來不及! 需急催提前
+                { "採購單號": "PO-8003", "品 號": "NBR-70一般膠", "預交日": "2026-03-01" }  // 開工4/15, 遠大於10天, 橡膠需緩送料
             ];
             processData(scheduleData, procureData);
-            document.getElementById('statusText').innerText = "已載入內建範例（橡膠與鐵件雙軌比對完成）";
+            document.getElementById('statusText').innerText = "已載入內建範例（含鐵件前置洗鐵與橡膠保質期控管）";
         }
 
         function runComparison() {
@@ -172,7 +174,7 @@
 
             Promise.all([readExcelFile(schedFile), readExcelFile(procFile)]).then(([sched, proc]) => {
                 processData(sched, proc);
-                document.getElementById('statusText').innerText = "雙軌比對完成！";
+                document.getElementById('statusText').innerText = "比對完成！";
             }).catch(err => {
                 alert('讀取檔案發生錯誤: ' + err.message);
             });
@@ -205,21 +207,15 @@
             return '橡膠類';
         }
 
-        function getCategoryBuffer(category, name) {
-            const upper = String(name).toUpperCase();
-            if (category === '鐵件類') {
-                return parseInt(document.getElementById('metalBuffer').value) || 14;
-            } else {
-                if (upper.includes('FKM') || upper.includes('氟')) {
-                    return parseInt(document.getElementById('fkmBuffer').value) || 3;
-                }
-                return parseInt(document.getElementById('rubberBuffer').value) || 10;
-            }
-        }
-
         function processData(sched, proc) {
             globalResultData = [];
             let pullIn = 0, pushOut = 0, normal = 0;
+
+            const fkmBuffer = parseInt(document.getElementById('fkmBuffer').value) || 3;
+            const rubberBuffer = parseInt(document.getElementById('rubberBuffer').value) || 10;
+            const iqcDays = parseInt(document.getElementById('iqcDays').value) || 2;
+            const washDays = parseInt(document.getElementById('washDays').value) || 3;
+            const metalPrepDays = iqcDays + washDays; // 鐵件前置總天數
 
             sched.forEach(s => {
                 const orderNo = s['製令編號'] || s['工單號'] || s[Object.keys(s)[0]] || '';
@@ -241,37 +237,65 @@
                         const diffTime = startDate - etaDate;
                         const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
                         const category = classifyCategory(mat);
-                        const specificBuffer = getCategoryBuffer(category, mat);
 
-                        if (diffDays < 0) {
-                            pullIn++;
-                            globalResultData.push({
-                                工單號: orderNo,
-                                料件屬性: category,
-                                產品: prod,
-                                PO號: po,
-                                原ETA: formatDate(etaDate),
-                                建議新到貨日: formatDate(startDate),
-                                動作: '【需急催料 (Pull-in)】',
-                                差距天數: Math.abs(diffDays) + ' 天 (提前上線)',
-                                類型: 'red'
-                            });
-                        } else if (diffDays > specificBuffer) {
-                            pushOut++;
-                            const reason = category === '鐵件類' ? `超過鐵件安全緩衝${specificBuffer}天(防生銹)` : `超過保質期緩衝${specificBuffer}天(防變質)`;
-                            globalResultData.push({
-                                工單號: orderNo,
-                                料件屬性: category,
-                                產品: prod,
-                                PO號: po,
-                                原ETA: formatDate(etaDate),
-                                建議新到貨日: formatDate(startDate),
-                                動作: '【需緩送料 (Push-out)】',
-                                差距天數: `${diffDays} 天 (${reason})`,
-                                類型: 'purple'
-                            });
+                        if (category === '鐵件類') {
+                            // 鐵件邏輯：ETA 必須早於 (開工日 - 檢驗與洗鐵天數)
+                            // 也就是 ETA 超過開工日減去前置天數，代表來不及洗鐵與檢驗！
+                            const latestAllowedEta = new Date(startDate);
+                            latestAllowedEta.setDate(latestAllowedEta.getDate() - metalPrepDays);
+
+                            if (etaDate > latestAllowedEta) {
+                                // 來不及洗鐵/檢驗 -> 需急催提前
+                                pullIn++;
+                                globalResultData.push({
+                                    工單號: orderNo,
+                                    料件屬性: '鐵件類',
+                                    產品: prod,
+                                    PO號: po,
+                                    原ETA: formatDate(etaDate),
+                                    建議新到貨日: formatDate(latestAllowedEta),
+                                    動作: '【需急催鐵件 (提前備料)】',
+                                    差距天數: `ETA來不及前置洗鐵/檢驗 (需提早${metalPrepDays}天到廠)`,
+                                    類型: 'red'
+                                });
+                            } else {
+                                // 鐵件提早到是OK的（有更多時間洗鐵與檢驗）
+                                normal++;
+                            }
                         } else {
-                            normal++;
+                            // 橡膠邏輯：維持雙向
+                            const upperMat = String(mat).toUpperCase();
+                            const specificBuffer = (upperMat.includes('FKM') || upperMat.includes('氟')) ? fkmBuffer : rubberBuffer;
+
+                            if (diffDays < 0) {
+                                pullIn++;
+                                globalResultData.push({
+                                    工單號: orderNo,
+                                    料件屬性: '橡膠類',
+                                    產品: prod,
+                                    PO號: po,
+                                    原ETA: formatDate(etaDate),
+                                    建議新到貨日: formatDate(startDate),
+                                    動作: '【需急催膠料 (Pull-in)】',
+                                    差距天數: `排程提前 ${Math.abs(diffDays)} 天 (防停線)`,
+                                    類型: 'red'
+                                });
+                            } else if (diffDays > specificBuffer) {
+                                pushOut++;
+                                globalResultData.push({
+                                    工單號: orderNo,
+                                    料件屬性: '橡膠類',
+                                    產品: prod,
+                                    PO號: po,
+                                    原ETA: formatDate(etaDate),
+                                    建議新到貨日: formatDate(startDate),
+                                    動作: '【需緩送膠料 (Push-out)】',
+                                    差距天數: `延後 ${diffDays} 天 (超過保質期${specificBuffer}天限期)`,
+                                    類型: 'purple'
+                                });
+                            } else {
+                                normal++;
+                            }
                         }
                     }
                 });
@@ -309,7 +333,7 @@
             document.getElementById('resultSection').classList.remove('hidden');
 
             if (globalResultData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-6 text-center text-slate-400">目前沒有需要調整交期的項目（橡膠與鐵件交期皆在雙軌安全範圍內）</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-6 text-center text-slate-400">目前所有料件進度皆正常（鐵件前置洗鐵與橡膠保質期皆在安全範圍內）</td></tr>`;
                 return;
             }
 
@@ -326,7 +350,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-slate-700">${row.原ETA}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-indigo-600 font-semibold">${row.建議新到貨日}</td>
                     <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 text-xs font-bold rounded-md ${badgeClass}">${row.動作}</span></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-medium">${row.差距天數}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-700 text-xs">${row.差距天數}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-slate-400 border-b border-dashed border-slate-300"></td>
                 `;
                 tbody.appendChild(tr);
@@ -346,13 +370,13 @@
                 '原 ETA': item.原ETA,
                 '建議新到貨日': item.建議新到貨日,
                 '動作': item.動作,
-                '差距天數/說明': item.差距天數,
+                '評估說明': item.差距天數,
                 '生管簽名': ''
             }));
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "交期變更通知單(雙軌)");
-            XLSX.writeFile(wb, "外購料件交期變更通知單_雙軌.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "交期變更通知單(智慧分流)");
+            XLSX.writeFile(wb, "外購料件交期變更通知單_智慧分流.xlsx");
         }
     </script>
 </body>
