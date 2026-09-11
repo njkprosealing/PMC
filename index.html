@@ -7,54 +7,107 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
-<body class="bg-gray-50 font-sans antialiased">
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">外購混煉膠交期變更通知與排程同步系統</h1>
-            <p class="text-gray-600">上傳排程表與採購在途表，系統自動比對並產出交期變更通知單。</p>
+<body class="bg-slate-100 font-sans antialiased">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <header class="mb-8 bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">外購混煉膠交期變更通知與排程同步系統</h1>
+                    <p class="text-sm text-slate-500 mt-1">針對 ERP 採購在途表與生產排程表進行雙向智慧比對，防範停線與過期。</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium">線上互動系統運作中</span>
+                </div>
+            </div>
         </header>
 
         <!-- 操作面板 -->
-        <div class="bg-white rounded-lg shadow p-6 mb-8 grid md:grid-cols-3 gap-4 items-end">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">1. 選擇生產排程表 (Excel/CSV)</label>
-                <input type="file" id="scheduleFile" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-slate-200">
+            <h2 class="text-lg font-semibold text-slate-800 mb-4">資料匯入與設定</h2>
+            <div class="grid md:grid-cols-3 gap-6 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">1. 生產排程表 (Excel)</label>
+                    <input type="file" id="scheduleFile" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                    <p class="text-xs text-slate-400 mt-1">需包含：製令編號、產品/料號、預計開工日</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">2. 採購在途進度表 (ERP 匯出 Excel)</label>
+                    <input type="file" id="procureFile" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                    <p class="text-xs text-slate-400 mt-1">含：採購單號、預交日、品號、品名</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">安全存放天數 (Push-out 緩衝)</label>
+                    <input type="number" id="bufferDays" value="7" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <p class="text-xs text-slate-400 mt-1">預設 7 天（防過期安全緩衝）</p>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">2. 選擇採購在途進度表 (Excel/CSV)</label>
-                <input type="file" id="procureFile" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">安全存放天數 (預設 7 天)</label>
-                <input type="number" id="bufferDays" value="7" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
-            </div>
-            <div class="md:col-span-3 flex justify-between items-center mt-2">
-                <button onclick="runComparison()" class="bg-blue-600 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-700 transition">開始自動比對</button>
-                <button onclick="loadSample()" class="text-sm text-blue-600 hover:underline">載入範例資料測試</button>
+            <div class="mt-6 flex flex-wrap justify-between items-center pt-4 border-t border-slate-100">
+                <div class="flex gap-4">
+                    <button onclick="runComparison()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition flex items-center gap-2">
+                        <span>⚡ 開始雙向智慧比對</span>
+                    </button>
+                    <button onclick="loadSample()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        載入內建範例測試
+                    </button>
+                </div>
+                <span id="statusText" class="text-sm text-slate-500">尚未執行比對</span>
             </div>
         </div>
 
-        <!-- 變更通知表展示 -->
-        <div id="resultSection" class="bg-white rounded-lg shadow overflow-hidden hidden">
-            <div class="px-6 py-4 bg-gray-100 border-b flex justify-between items-center">
-                <h3 class="font-bold text-gray-800">外購混煉膠交期變更通知單 (比對結果)</h3>
-                <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-1.5 rounded text-sm hover:bg-green-700 transition">下載變更通知單 Excel</button>
+        <!-- 儀表板摘要卡片 -->
+        <div id="statsSection" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-slate-500 font-medium">需急催料 (Pull-in)</p>
+                    <h3 id="pullInCount" class="text-3xl font-bold text-red-600 mt-1">0</h3>
+                    <p class="text-xs text-slate-400 mt-1">排程提前 ｜ 防停線</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 text-xl font-bold">🔴</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-slate-500 font-medium">需緩送料 (Push-out)</p>
+                    <h3 id="pushOutCount" class="text-3xl font-bold text-purple-600 mt-1">0</h3>
+                    <p class="text-xs text-slate-400 mt-1">排程延後 ｜ 防過期</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 text-xl font-bold">🟣</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-slate-500 font-medium">正常交期 (Normal)</p>
+                    <h3 id="normalCount" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
+                    <p class="text-xs text-slate-400 mt-1">無需調整</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 text-xl font-bold">🟢</div>
+            </div>
+        </div>
+
+        <!-- 變更通知表展示區 -->
+        <div id="resultSection" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hidden">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-slate-800">外購混煉膠交期變更通知單</h3>
+                    <p class="text-xs text-slate-500">生管檢視變更清單，確認無誤後列印或簽名交由採購執行</p>
+                </div>
+                <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2">
+                    <span>📥 下載變更通知單 Excel</span>
+                </button>
             </div>
             <div class="overflow-x-auto">
-                <table id="resultTable" class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50">
+                <table id="resultTable" class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead class="bg-slate-50">
                         <tr>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">工單號</th>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">產品 / 料號</th>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">採購 PO 號</th>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">原 ETA</th>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">建議新到貨日</th>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">動作</th>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">差距天數</th>
-                            <th class="px-6 py-3 text-left font-medium text-gray-500">生管簽名</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">工單號 (製令編號)</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">產品 / 料號</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">採購 PO 號</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">原預交日 (ETA)</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">建議新到貨日</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">動作指令</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">差距天數</th>
+                            <th class="px-6 py-3 text-left font-medium text-slate-500">生管簽名</th>
                         </tr>
                     </thead>
-                    <tbody id="resultBody" class="divide-y divide-gray-200 bg-white">
+                    <tbody id="resultBody" class="divide-y divide-slate-200 bg-white">
                     </tbody>
                 </table>
             </div>
@@ -65,32 +118,34 @@
         let globalResultData = [];
 
         function loadSample() {
-            // Sample data simulation
+            // 模擬真實排程表與 ERP 採購在途表資料結構
             const scheduleData = [
-                { 製令編號: "001", 產品: "膠A", 預計開工日: "2024-09-10" },
-                { 製令編號: "002", 產品: "膠B", 預計開工日: "2024-09-30" },
-                { 製令編號: "003", 產品: "膠C", 預計開工日: "2024-09-18" }
+                { "製令編號": "MO-2026-001", "產品": "FKM-75膠料", "預計開工日": "2026-03-10" },
+                { "製令編號": "MO-2026-002", "產品": "NBR-70膠料", "預計開工日": "2026-04-15" },
+                { "製令編號": "MO-2026-003", "產品": "EPDM膠料", "預計開工日": "2026-03-20" }
             ];
             const procureData = [
-                { PO: "PO001", 原料料號: "膠A", 原ETA: "2024-09-15" },
-                { PO: "PO002", 原料料號: "膠B", 原ETA: "2024-09-20" },
-                { PO: "PO003", 原料料號: "膠C", 原ETA: "2024-09-18" }
+                { "採購單號": "PO-9001", "品 號": "FKM-75膠料", "預交日": "2026-03-18" },
+                { "採購單號": "PO-9002", "品 號": "NBR-70膠料", "預交日": "2026-03-25" },
+                { "採購單號": "PO-9003", "品 號": "EPDM膠料", "預交日": "2026-03-19" }
             ];
             processData(scheduleData, procureData);
+            document.getElementById('statusText').innerText = "已載入範例資料並完成比對";
         }
 
         function runComparison() {
             const schedFile = document.getElementById('scheduleFile').files[0];
             const procFile = document.getElementById('procureFile').files[0];
             if (!schedFile || !procFile) {
-                alert('請先上傳排程表與採購在途表（或點選下方載入範例資料測試）');
+                alert('請上傳《生產排程表》與《採購在途進度表》Excel 檔案（或點選載入內建範例測試）');
                 return;
             }
 
             Promise.all([readExcelFile(schedFile), readExcelFile(procFile)]).then(([sched, proc]) => {
                 processData(sched, proc);
+                document.getElementById('statusText').innerText = "比對完成！";
             }).catch(err => {
-                alert('讀取檔案失敗: ' + err.message);
+                alert('讀取檔案發生錯誤: ' + err.message);
             });
         }
 
@@ -103,7 +158,7 @@
                         const workbook = XLSX.read(data, {type: 'array'});
                         const firstSheetName = workbook.SheetNames[0];
                         const worksheet = workbook.Sheets[firstSheetName];
-                        const json = XLSX.utils.sheet_to_json(worksheet);
+                        const json = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
                         resolve(json);
                     } catch (err) {
                         reject(err);
@@ -116,62 +171,88 @@
         function processData(sched, proc) {
             const bufferDays = parseInt(document.getElementById('bufferDays').value) || 7;
             globalResultData = [];
+            let pullIn = 0, pushOut = 0, normal = 0;
 
-            // Simple match by product/material name or first column
             sched.forEach(s => {
-                // Get keys dynamically
-                const sKeys = Object.keys(s);
-                const orderNo = s[sKeys[0]] || '';
-                const prod = s[sKeys[1]] || '';
-                const startStr = s[sKeys[2]] || s['預計開工日'] || '';
-                const startDate = new Date(startStr);
-
-                if (isNaN(startDate)) return;
+                // 智慧抓取欄位名稱
+                const orderNo = s['製令編號'] || s['工單號'] || s[Object.keys(s)[0]] || '';
+                const prod = s['產品'] || s['膠種'] || s['品名'] || s[Object.keys(s)[1]] || '';
+                let rawDate = s['預計開工日'] || s['開工日'] || s['訂單交期'] || s[Object.keys(s)[7]] || '';
+                
+                const startDate = parseExcelDate(rawDate);
+                if (!startDate) return;
 
                 proc.forEach(p => {
-                    const pKeys = Object.keys(p);
-                    const po = p[pKeys[0]] || '';
-                    const mat = p[pKeys[1]] || '';
-                    const etaStr = p[pKeys[2]] || p['原ETA'] || '';
-                    const etaDate = new Date(etaStr);
+                    const po = p['採購單號'] || p['PO'] || p[Object.keys(p)[3]] || '';
+                    const mat = p['品 號'] || p['品號'] || p['料號'] || p[Object.keys(p)[5]] || '';
+                    let rawEta = p['預交日'] || p['ETA'] || p[Object.keys(p)[4]] || '';
 
-                    if (isNaN(etaDate)) return;
+                    const etaDate = parseExcelDate(rawEta);
+                    if (!etaDate) return;
 
-                    // Match if product equals material or similar
-                    if (prod.trim() === mat.trim()) {
+                    // 模糊或直接比對品號/產品名稱
+                    if (String(prod).trim() === String(mat).trim() || String(prod).includes(String(mat)) || String(mat).includes(String(prod))) {
                         const diffTime = startDate - etaDate;
                         const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
                         if (diffDays < 0) {
-                            // Pull-in (提前)
+                            // 提前：開工日 < ETA -> 需急催料
+                            pullIn++;
                             globalResultData.push({
                                 工單號: orderNo,
                                 產品: prod,
                                 PO號: po,
-                                原ETA: etaStr.split('T')[0],
-                                建議新到貨日: startStr.split('T')[0],
-                                動作: '提前 (Pull-in)',
-                                差距天數: Math.abs(diffDays),
+                                原ETA: formatDate(etaDate),
+                                建議新到貨日: formatDate(startDate),
+                                動作: '【需急催料 (Pull-in)】',
+                                差距天數: Math.abs(diffDays) + ' 天',
                                 類型: 'red'
                             });
                         } else if (diffDays > bufferDays) {
-                            // Push-out (延後)
+                            // 延後：開工日 > ETA + 安全天數 -> 需緩送料
+                            pushOut++;
                             globalResultData.push({
                                 工單號: orderNo,
                                 產品: prod,
                                 PO號: po,
-                                原ETA: etaStr.split('T')[0],
-                                建議新到貨日: startStr.split('T')[0],
-                                動作: '延後 (Push-out)',
-                                差距天數: diffDays,
+                                原ETA: formatDate(etaDate),
+                                建議新到貨日: formatDate(startDate),
+                                動作: '【需緩送料 (Push-out)】',
+                                差距天數: diffDays + ' 天',
                                 類型: 'purple'
                             });
+                        } else {
+                            normal++;
                         }
                     }
                 });
             });
 
+            document.getElementById('pullInCount').innerText = pullIn;
+            document.getElementById('pushOutCount').innerText = pushOut;
+            document.getElementById('normalCount').innerText = normal;
+            document.getElementById('statsSection').classList.remove('hidden');
+
             renderTable();
+        }
+
+        function parseExcelDate(val) {
+            if (!val) return null;
+            if (typeof val === 'number') {
+                // Excel serial date
+                const utc_days = Math.floor(val - 25569);
+                return new Date(utc_days * 86400 * 1000);
+            }
+            const d = new Date(val);
+            return isNaN(d) ? null : d;
+        }
+
+        function formatDate(d) {
+            if (!d || isNaN(d)) return '';
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         function renderTable() {
@@ -180,30 +261,33 @@
             document.getElementById('resultSection').classList.remove('hidden');
 
             if (globalResultData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">沒有發現需要調整交期的工單</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-6 text-center text-slate-400">目前沒有需要調整交期的項目（所有外購膠交期皆在安全範圍內）</td></tr>`;
                 return;
             }
 
             globalResultData.forEach(row => {
-                const badgeClass = row.類型 === 'red' ? 'bg-red-100 text-red-800' : 'bg-purple-100 text-purple-800';
+                const badgeClass = row.類型 === 'red' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-purple-100 text-purple-800 border border-purple-200';
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-gray-50';
+                tr.className = 'hover:bg-slate-50 transition';
                 tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${row.工單號}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">${row.產品}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">${row.PO號}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">${row.原ETA}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-700 font-semibold">${row.建議新到貨日}</td>
-                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 text-xs font-semibold rounded ${badgeClass}">${row.動作}</span></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">${row.差距天數} 天</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-400 border-b border-dashed border-gray-400">（簽名）</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-900">${row.工單號}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-700">${row.產品}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-700">${row.PO號}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-700">${row.原ETA}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-indigo-600 font-semibold">${row.建議新到貨日}</td>
+                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 text-xs font-bold rounded-md ${badgeClass}">${row.動作}</span></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-medium">${row.差距天數}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-400 border-b border-dashed border-slate-300"></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         function exportExcel() {
-            if (globalResultData.length === 0) return;
+            if (globalResultData.length === 0) {
+                alert('沒有可匯出的變更資料');
+                return;
+            }
             const exportData = globalResultData.map(item => ({
                 '工單號': item.工單號,
                 '產品': item.產品,
